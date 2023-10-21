@@ -2,7 +2,9 @@
 
 This repository provides simple interface for specifying different schemes and calculating their failure rate.
 
-#### Usage
+### Usage
+
+**The code for this example is also in Program.cs**
 
 The usage will be demonstrated on the following scheme
 
@@ -91,3 +93,10 @@ Console.WriteLine(
     system.average_failure_probability(1000, 400)
 );
 ```
+
+
+### Limitation on system size
+
+Currently the program needs to consider all possible failure states, and there are exponentially many of them.
+
+The practical limitation is around 20 - 30 element types and elements combined. If needed, the calculation can be optimized by ommiting very unlikely states.
