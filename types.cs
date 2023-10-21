@@ -116,6 +116,13 @@ namespace SystemSimulation
         /// </summary>
         List<Voting> votings;
 
+        public Voting(List<ElementID> elements_, List<Voting> votings_, int redundancy_)
+        {
+            elements = elements_;
+            votings = votings_;
+            redundancy = redundancy_;
+        }
+
         /// <summary>
         /// Determines whether the voting failed based on current inputs
         /// </summary>

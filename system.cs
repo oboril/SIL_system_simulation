@@ -26,12 +26,17 @@ namespace SystemSimulation
         /// </summary>
         public static ulong all_element_states(ulong common_failures, ulong individual_failures, List<ElementTypeID> elements)
         {
-            ulong all_element_states = 0;
+            // start with individual failures
+            ulong all_element_states = individual_failures;
+
+            // add common failures
             for (int element = 0; element < elements.Count(); element++)
             {
-                ulong failed = ((individual_failures >> element) & 1) | ((common_failures >> elements[element]) & 1);
-                all_element_states |= failed >> element;
+                ulong failed = (common_failures >> elements[element]) & 1;
+                all_element_states |= failed << element;
             }
+
+            // return bitmap
             return all_element_states;
         }
 
@@ -98,7 +103,7 @@ namespace SystemSimulation
         /// <summary>
         /// Creates empty SIL system class.
         /// </summary>
-        SILSystem()
+        public SILSystem()
         {
             element_types = new List<ElementType>();
             elements = new List<ElementTypeID>();
@@ -159,7 +164,7 @@ namespace SystemSimulation
             if (vars > 40)
                 throw new Exception("Using more than 40 elements and element types in SIL system will take forever.");
             if (vars > 20)
-                Console.WriteLine("WARNING: the number of elements in SIL system is high {}, this will cause compilation to be very slow", vars);
+                Console.WriteLine("WARNING: the number of elements in SIL system is high {0}, this will cause compilation to be very slow", vars);
             
             // Cache all failing states
             for (ulong state_idx = 0; state_idx < (1ul << vars); state_idx++)
