@@ -21,7 +21,7 @@ SILSystem system = new SILSystem();
 
 This class holds information about all elements for efficient calculation of probabilities.
 
-Next, specify types of elements. In our case we have two distinct element types, sensor and valve. We also need to provide values for all parameters such as failure rates etc.
+Next, specify types of elements. In our case we have two distinct element types, `sensor` and `valve`. We also need to provide values for all parameters such as failure rates etc.
 
 ```
 var sensor = system.add_element_type(new ElementType(
