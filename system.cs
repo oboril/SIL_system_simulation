@@ -6,6 +6,7 @@ namespace SystemSimulation
     using ElementTypeID = Int32;
     using ElementID = Int32;
     using System.ComponentModel;
+    using System.Security.Cryptography.X509Certificates;
 
     /// <summary>
     /// Defines a single possible states with specific failure causes
@@ -60,7 +61,7 @@ namespace SystemSimulation
                 if (((individual_failures >> element) & 1) == 1)
                     prob *= p;
                 else
-                    prob *= 1.0 - p;    
+                    prob *= 1.0 - p;
             }
 
 
@@ -71,7 +72,7 @@ namespace SystemSimulation
                 if (((common_failures >> element_type) & 1) == 1)
                     prob *= p;
                 else
-                    prob *= 1.0 - p;    
+                    prob *= 1.0 - p;
             }
 
 
@@ -156,7 +157,7 @@ namespace SystemSimulation
         public void compile()
         {
             // Check that final voting is set
-            if (! final_voting.HasValue)
+            if (!final_voting.HasValue)
                 throw new Exception("The final voting needs to be specified before SIL system is compiled");
 
             // Check number of states
@@ -165,7 +166,7 @@ namespace SystemSimulation
                 throw new Exception("Using more than 40 elements and element types in SIL system will take forever.");
             if (vars > 20)
                 Console.WriteLine("WARNING: the number of elements in SIL system is high {0}, this will cause compilation to be very slow", vars);
-            
+
             // Cache all failing states
             for (ulong state_idx = 0; state_idx < (1ul << vars); state_idx++)
             {
@@ -187,9 +188,9 @@ namespace SystemSimulation
         public Probability failure_probability(Time mission_time, Time time_since_proof_test)
         {
             // Check that system is compiled 
-            if (! compiled)
+            if (!compiled)
                 throw new Exception("The system needs to be compiled before calculating probabilities");
-            
+
             // Sum probabilities of all fail states
             Probability prob = 0.0;
 
@@ -197,6 +198,13 @@ namespace SystemSimulation
                 prob += state.probability(element_types, elements, mission_time, time_since_proof_test);
 
             return prob;
+        }
+
+        public Probability average_failure_probability(Time mission_lifetime, Time proof_test_interval, double epsrel=1e-8)
+        {
+            var func = (double x) => { return failure_probability(x, x % proof_test_interval); };
+            var integ_result = NumericalIntegration.AdaptiveQuadrature.integrate(func, 0, mission_lifetime, 0, epsrel, proof_test_interval / 2);
+            return integ_result.integral / mission_lifetime;
         }
     }
 }

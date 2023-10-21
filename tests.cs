@@ -1,5 +1,6 @@
 namespace SystemSimulationTests
 {
+    using System.Reflection.Emit;
     using SystemSimulation;
 
     static class Tests
@@ -29,6 +30,8 @@ namespace SystemSimulationTests
             test5();
             test6();
             test7();
+            test8();
+            test9();
         }
 
         static void test1()
@@ -213,6 +216,88 @@ namespace SystemSimulationTests
             double p3 = exponential_dist(0.03);
 
             assert_close(system.failure_probability(1, 0), p1*p2 + p1*p3 + p2*p3 - 2*p1*p2*p3, 1e-8);
+        }
+
+        static void test8()
+        {
+            // a--b-|
+            //      | 1oo2 -->
+            // c----|
+
+            SILSystem system = new SILSystem();
+
+            // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
+            var at = system.add_element_type(new ElementType(
+                0, 0.01, 0, 0, 0, 0, 0
+            ));
+
+            var bt = system.add_element_type(new ElementType(
+                0, 0.02, 0, 0, 0, 0, 0
+            ));
+
+            var ct = system.add_element_type(new ElementType(
+                0, 0.03, 0, 0, 0, 0, 0
+            ));
+
+            var a = system.add_element(at);
+            var b = system.add_element(bt);
+            var c = system.add_element(ct);
+
+            var v1 = new Voting((new int[] {a, b}).ToList(), (new Voting[] {}).ToList(), 0);
+            var v2 = new Voting((new int[] {c}).ToList(), (new Voting[] {v1}).ToList(), 1);
+
+            system.set_final_voting(v2);
+
+            system.compile();
+
+            double p1 = exponential_dist(0.01);
+            double p2 = exponential_dist(0.02);
+            double p3 = exponential_dist(0.03);
+
+            double pab = p1 + p2 - p1*p2;
+
+            assert_close(system.failure_probability(1, 0), pab * p3, 1e-8);
+        }
+
+        static void test9()
+        {
+            // a--b-|
+            //      | 2oo2 -->
+            // c----|
+
+            SILSystem system = new SILSystem();
+
+            // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
+            var at = system.add_element_type(new ElementType(
+                0, 0.01, 0, 0, 0, 0, 0
+            ));
+
+            var bt = system.add_element_type(new ElementType(
+                0, 0.02, 0, 0, 0, 0, 0
+            ));
+
+            var ct = system.add_element_type(new ElementType(
+                0, 0.03, 0, 0, 0, 0, 0
+            ));
+
+            var a = system.add_element(at);
+            var b = system.add_element(bt);
+            var c = system.add_element(ct);
+
+            var v1 = new Voting((new int[] {a, b}).ToList(), (new Voting[] {}).ToList(), 0);
+            var v2 = new Voting((new int[] {c}).ToList(), (new Voting[] {v1}).ToList(), 0);
+
+            system.set_final_voting(v2);
+
+            system.compile();
+
+            double p1 = exponential_dist(0.01);
+            double p2 = exponential_dist(0.02);
+            double p3 = exponential_dist(0.03);
+
+            double pab = p1 + p2 - p1*p2;
+
+            assert_close(system.failure_probability(1, 0), pab + p3 - pab * p3, 1e-8);
         }
     }
 }
