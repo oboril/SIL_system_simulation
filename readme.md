@@ -2,6 +2,22 @@
 
 This repository provides simple interface for specifying different schemes and calculating their failure rate.
 
+### Algorithm
+
+The algorithm assumes all possible element failures - independed and common-cause failures. At any time, any combination of these failures is possible.
+
+Calling `system.add_element_type()` registers common-cause failure, and calling `system.add_element()` registers independent failure.
+
+The instances of `Voting` class takes references to elements and/or other outputs of other votings. Based on a given state (state defines which failures happened, and thus which elements are in the failed state),
+voting can determine whether it has failed or not. This is evaluated recursively until it is determined whether the entire system failed or not.
+
+On `system.compile()`, the system iterates through all possible states (combinations of elements failing or not failing), and evaluates voting to select and cache the states that lead to system failure. Upon calling `system.failure_probability()`, the system iterates through all states that lead to system failure and sums their probabilities at given time.
+
+Currently the time complexity is $\mathcal{O}\left(\exp(n_c+n_i)\right)$ where $n_c$ is number of common-cause failures (element types) and $n_i$ is number of independent failures (elements). If needed, the complexity can be improved by
+ - calculating probabilities for branches without common element types separately
+ - optimizing votings that have only one kind of input
+ - pruning states to eliminate very unlikely ones
+
 ### Usage
 
 **The code for this example is also in Program.cs**
@@ -100,3 +116,4 @@ Console.WriteLine(
 Currently the program needs to consider all possible failure states, and there are exponentially many of them.
 
 The practical limitation is around 20 - 30 element types and elements combined. If needed, the calculation can be optimized by ommiting very unlikely states.
+
