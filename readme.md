@@ -43,13 +43,13 @@ Next, specify types of elements. In our case we have two distinct element types,
 
 ```
 var sensor = system.add_element_type(new ElementType(
-    // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
-    0.001, 0.0003, 0.8, 0.02, 0.01, 8, 8
+    // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore, proof_test_interval
+    0.001, 0.0003, 0.8, 0.02, 0.01, 8, 8, 200
 ));
 
 var valve = system.add_element_type(new ElementType(
-    // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
-    0.001, 0.001, 0.6, 0.02, 0.01, 8, 8
+    // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore, proof_test_interval
+    0.001, 0.001, 0.6, 0.02, 0.01, 8, 8, 400
 ));
 ```
 
@@ -99,14 +99,14 @@ Now the system is ready and it can calculate probabilities at certain time point
 ```
 // now we can get failure probabilities at certain times
 Console.WriteLine(
-    "Failure probability after 1000 hrs (200 hrs after last proof test): {0}",
-    system.failure_probability(1000, 200)
+    "Failure probability after 1000 hrs: {0}",
+    system.failure_probability(1000)
 );
 
 // and it is also possible to integrate and average the probability
 Console.WriteLine(
-    "Average failure probability after 1000 hrs (proof test every 400 hrs): {0}",
-    system.average_failure_probability(1000, 400)
+    "Average failure probability after 1000 hrs: {0}",
+    system.average_failure_probability(1000)
 );
 ```
 
