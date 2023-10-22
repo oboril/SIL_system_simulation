@@ -50,14 +50,14 @@ namespace SystemSimulation
         /// <summary>
         /// Calculates probability of this state
         /// </summary>
-        public Probability probability(List<ElementType> element_types, List<ElementTypeID> elements, Time mission_time, Time time_since_proof_test)
+        public Probability probability(List<ElementType> element_types, List<ElementTypeID> elements, Time mission_time)
         {
             Probability prob = 1.0;
 
             // Individual failures
             for (int element = 0; element < elements.Count(); element++)
             {
-                Probability p = element_types[elements[element]].independent_failure(mission_time, time_since_proof_test);
+                Probability p = element_types[elements[element]].independent_failure(mission_time);
                 if (((individual_failures >> element) & 1) == 1)
                     prob *= p;
                 else
@@ -68,7 +68,7 @@ namespace SystemSimulation
             // Common failuers
             for (int element_type = 0; element_type < element_types.Count(); element_type++)
             {
-                Probability p = element_types[element_type].common_failure(mission_time, time_since_proof_test);
+                Probability p = element_types[element_type].common_failure(mission_time);
                 if (((common_failures >> element_type) & 1) == 1)
                     prob *= p;
                 else
@@ -185,7 +185,7 @@ namespace SystemSimulation
             compiled = true;
         }
 
-        public Probability failure_probability(Time mission_time, Time time_since_proof_test)
+        public Probability failure_probability(Time mission_time)
         {
             // Check that system is compiled 
             if (!compiled)
@@ -195,15 +195,20 @@ namespace SystemSimulation
             Probability prob = 0.0;
 
             foreach (State state in fail_states)
-                prob += state.probability(element_types, elements, mission_time, time_since_proof_test);
+                prob += state.probability(element_types, elements, mission_time);
 
             return prob;
         }
 
-        public Probability average_failure_probability(Time mission_lifetime, Time proof_test_interval, double epsrel=1e-8)
+        public Probability average_failure_probability(Time mission_lifetime, double epsrel=1e-8)
         {
-            var func = (double x) => { return failure_probability(x, x % proof_test_interval); };
-            var integ_result = NumericalIntegration.AdaptiveQuadrature.integrate(func, 0, mission_lifetime, 0, epsrel, proof_test_interval / 2);
+            double max_step = 1000;
+            foreach (ElementType et in element_types)
+                if (et.proof_test_interval < max_step)
+                    max_step = et.proof_test_interval;
+
+            var func = (double x) => { return failure_probability(x); };
+            var integ_result = NumericalIntegration.AdaptiveQuadrature.integrate(func, 0, mission_lifetime, 0, epsrel, max_step);
             return integ_result.integral / mission_lifetime;
         }
     }

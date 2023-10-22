@@ -3,3 +3,4 @@ bin
 .vscode
 *.sln
 *.csproj
+pade_approximation.py

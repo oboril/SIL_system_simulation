@@ -46,7 +46,12 @@ namespace SystemSimulation
         /// </summary>
         Time mean_time_to_restore;
 
-        public ElementType(Rate dangerous_detected_, Rate dangerous_undetected_, Probability proof_test_coverage_, Probability common_detected_, Probability common_undetected_, Time mean_repair_time_, Time mean_time_to_restore_)
+        /// <summary>
+        /// Interval at which the components are tested for undetected faults
+        /// </summary>
+        public readonly Time proof_test_interval;
+
+        public ElementType(Rate dangerous_detected_, Rate dangerous_undetected_, Probability proof_test_coverage_, Probability common_detected_, Probability common_undetected_, Time mean_repair_time_, Time mean_time_to_restore_, Time proof_test_interval_)
         {
             dangerous_detected = dangerous_detected_;
             dangerous_undetected = dangerous_undetected_;
@@ -55,6 +60,7 @@ namespace SystemSimulation
             common_undetected = common_undetected_;
             mean_repair_time = mean_repair_time_;
             mean_time_to_restore = mean_time_to_restore_;
+            proof_test_interval = proof_test_interval_;
         }
 
         Probability exponential_dist(Rate r, Time t)
@@ -71,8 +77,9 @@ namespace SystemSimulation
         /// <summary>
         /// Calculates probability that a single element of this type is in the failed state at given time.
         /// </summary>
-        public Probability independent_failure(Time mission_time, Time time_since_proof_test)
+        public Probability independent_failure(Time mission_time)
         {
+            Time time_since_proof_test = mission_time % proof_test_interval;
             Probability combined = 0.0d;
 
             // Undetected failures
@@ -89,8 +96,9 @@ namespace SystemSimulation
         /// <summary>
         /// Calculates probability that all elements of this type is in the failed state at given time due to a common cause.
         /// </summary>
-        public Probability common_failure(Time mission_time, Time time_since_proof_test)
+        public Probability common_failure(Time mission_time)
         {
+            Time time_since_proof_test = mission_time % proof_test_interval;
             Probability combined = 0.0d;
 
             // Undetected failures

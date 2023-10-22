@@ -45,7 +45,7 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var et1 = system.add_element_type(new ElementType(
-                0.0, 0.01, 0, 0, 0, 0, 0
+                0.0, 0.01, 0, 0, 0, 0, 0, 0.5
             ));
 
             var e1 = system.add_element(et1);
@@ -56,10 +56,8 @@ namespace SystemSimulationTests
 
             system.compile();
 
-            assert_close(system.failure_probability(1, 0), exponential_dist(0.01), 1e-5);
-            assert_close(system.failure_probability(1, 1), exponential_dist(0.01), 1e-5);
-            assert_close(system.failure_probability(1, 10), exponential_dist(0.01), 1e-5);
-            assert_close(system.failure_probability(2, 10), exponential_dist(0.02), 1e-5);
+            assert_close(system.failure_probability(1), exponential_dist(0.01), 1e-5);
+            assert_close(system.failure_probability(2), exponential_dist(0.02), 1e-5);
         }
 
         static void test2()
@@ -68,7 +66,7 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var et1 = system.add_element_type(new ElementType(
-                0.0, 0.01, 1, 0, 0, 0, 0
+                0.0, 0.01, 1, 0, 0, 0, 0, 2
             ));
 
             var e1 = system.add_element(et1);
@@ -79,10 +77,8 @@ namespace SystemSimulationTests
 
             system.compile();
 
-            assert_close(system.failure_probability(1, 0), exponential_dist(0.0), 1e-8);
-            assert_close(system.failure_probability(1, 1), exponential_dist(0.01), 1e-8);
-            assert_close(system.failure_probability(1, 10), exponential_dist(0.1), 1e-8);
-            assert_close(system.failure_probability(2, 10), exponential_dist(0.1), 1e-8);
+            assert_close(system.failure_probability(0), exponential_dist(0.0), 1e-8);
+            assert_close(system.failure_probability(1), exponential_dist(0.01), 1e-8);
         }
 
         static void test3()
@@ -93,7 +89,7 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var et1 = system.add_element_type(new ElementType(
-                0.0, 0.01, 0, 0, 0, 0, 0
+                0.0, 0.01, 0, 0, 0, 0, 0, 1
             ));
 
             var e1 = system.add_element(et1);
@@ -107,7 +103,7 @@ namespace SystemSimulationTests
             
             double p = exponential_dist(0.01);
 
-            assert_close(system.failure_probability(1, 0), 2*p - p*p, 1e-8);
+            assert_close(system.failure_probability(1), 2*p - p*p, 1e-8);
         }
 
         static void test4()
@@ -118,7 +114,7 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var et1 = system.add_element_type(new ElementType(
-                0.0, 0.01, 0, 0, 0, 0, 0
+                0.0, 0.01, 0, 0, 0, 0, 0, 1
             ));
 
             var e1 = system.add_element(et1);
@@ -132,7 +128,7 @@ namespace SystemSimulationTests
             
             double p = exponential_dist(0.01);
 
-            assert_close(system.failure_probability(1, 0), p*p, 1e-8);
+            assert_close(system.failure_probability(1), p*p, 1e-8);
         }
 
         static void test5()
@@ -143,7 +139,7 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var et1 = system.add_element_type(new ElementType(
-                0.0, 0.01, 0, 0, 0.3, 0, 0
+                0.0, 0.01, 0, 0, 0.3, 0, 0, 1
             ));
 
             var e1 = system.add_element(et1);
@@ -158,7 +154,7 @@ namespace SystemSimulationTests
             double pc = exponential_dist(0.003);
             double pi = exponential_dist(0.007);
 
-            assert_close(system.failure_probability(1, 0), pc + pi*pi - pc*pi*pi, 1e-8);
+            assert_close(system.failure_probability(1), pc + pi*pi - pc*pi*pi, 1e-8);
         }
 
         static void test6()
@@ -169,7 +165,7 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var et1 = system.add_element_type(new ElementType(
-                0.03, 0.01, 0, 0, 0, 9, 8
+                0.03, 0.01, 0, 0, 0, 9, 8, 1
             ));
 
             var e1 = system.add_element(et1);
@@ -182,9 +178,7 @@ namespace SystemSimulationTests
 
             double p = exponential_dist(0.01);
 
-            assert_close(system.failure_probability(0, 1), 0.03*9+0.01*8, 1e-8);
-            assert_close(system.failure_probability(0, 0), 0.03*9+0.01*8, 1e-8);
-            assert_close(system.failure_probability(1, 0), 0.03*9+0.01*8 + p, 1e-8);
+            assert_close(system.failure_probability(1), 0.03*9+0.01*8 + p, 1e-8);
         }
 
         static void test7()
@@ -195,15 +189,15 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var et1 = system.add_element_type(new ElementType(
-                0, 0.01, 0, 0, 0, 0, 0
+                0, 0.01, 0, 0, 0, 0, 0, 1
             ));
 
             var et2 = system.add_element_type(new ElementType(
-                0, 0.02, 0, 0, 0, 0, 0
+                0, 0.02, 0, 0, 0, 0, 0, 1
             ));
 
             var et3 = system.add_element_type(new ElementType(
-                0, 0.03, 0, 0, 0, 0, 0
+                0, 0.03, 0, 0, 0, 0, 0, 1
             ));
 
             var e1 = system.add_element(et1);
@@ -220,7 +214,7 @@ namespace SystemSimulationTests
             double p2 = exponential_dist(0.02);
             double p3 = exponential_dist(0.03);
 
-            assert_close(system.failure_probability(1, 0), p1*p2 + p1*p3 + p2*p3 - 2*p1*p2*p3, 1e-8);
+            assert_close(system.failure_probability(1), p1*p2 + p1*p3 + p2*p3 - 2*p1*p2*p3, 1e-8);
         }
 
         static void test8()
@@ -233,15 +227,15 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var at = system.add_element_type(new ElementType(
-                0, 0.01, 0, 0, 0, 0, 0
+                0, 0.01, 0, 0, 0, 0, 0, 1
             ));
 
             var bt = system.add_element_type(new ElementType(
-                0, 0.02, 0, 0, 0, 0, 0
+                0, 0.02, 0, 0, 0, 0, 0, 1
             ));
 
             var ct = system.add_element_type(new ElementType(
-                0, 0.03, 0, 0, 0, 0, 0
+                0, 0.03, 0, 0, 0, 0, 0, 1
             ));
 
             var a = system.add_element(at);
@@ -261,7 +255,7 @@ namespace SystemSimulationTests
 
             double pab = p1 + p2 - p1*p2;
 
-            assert_close(system.failure_probability(1, 0), pab * p3, 1e-8);
+            assert_close(system.failure_probability(1), pab * p3, 1e-8);
         }
 
         static void test9()
@@ -274,15 +268,15 @@ namespace SystemSimulationTests
 
             // dangerous_detected, dangerous_undetected, proof_test_coverage, common_detected, common_undetected, mean_repair_time, mean_time_to_restore
             var at = system.add_element_type(new ElementType(
-                0, 0.01, 0, 0, 0, 0, 0
+                0, 0.01, 0, 0, 0, 0, 0, 1
             ));
 
             var bt = system.add_element_type(new ElementType(
-                0, 0.02, 0, 0, 0, 0, 0
+                0, 0.02, 0, 0, 0, 0, 0, 1
             ));
 
             var ct = system.add_element_type(new ElementType(
-                0, 0.03, 0, 0, 0, 0, 0
+                0, 0.03, 0, 0, 0, 0, 0, 1
             ));
 
             var a = system.add_element(at);
@@ -302,7 +296,7 @@ namespace SystemSimulationTests
 
             double pab = p1 + p2 - p1*p2;
 
-            assert_close(system.failure_probability(1, 0), pab + p3 - pab * p3, 1e-8);
+            assert_close(system.failure_probability(1), pab + p3 - pab * p3, 1e-8);
         }
     }
 }
