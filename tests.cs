@@ -421,7 +421,7 @@ namespace SystemSimulationTests
             double Beta1 = 0.02;
             double Beta2 = 0.021;
             double Beta3 = 0.019;
-            double TL = 140159;
+            double TL = 140160;
             double Tprf = 35040;
             double PDC = 0.5;
             double MTTR = 100;
@@ -450,6 +450,17 @@ namespace SystemSimulationTests
                 double p = p1*p2 + p2*p3 + p1*p3 - 2*p1*p2*p3;
 
                 assert_close(system.failure_probability(t), p, 0.01);
+            }
+
+            foreach (double t in new double[]{0, 1000, 50000, 100000, 130000})
+            {
+                double p1 = (t % Tprf) * Ldu1 * PDC + t * Ldu1 * (1 - PDC) + MTTR * Ldu1 + MRT * Ldd;
+                double p2 = (t % Tprf) * Ldu2 * PDC + t * Ldu2 * (1 - PDC) + MTTR * Ldu2 + MRT * Ldd;
+                double p3 = (t % Tprf) * Ldu3 * PDC + t * Ldu3 * (1 - PDC) + MTTR * Ldu3 + MRT * Ldd;
+                
+                double p = p1*p2 + p2*p3 + p1*p3;
+
+                assert_close(system.failure_probability(t), p, 0.03);
             }
             
 
