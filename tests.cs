@@ -18,7 +18,12 @@ namespace SystemSimulationTests
         private static double exponential_dist(double x)
         {
             // Using Taylor expansion of 1 - exp(-rt) is most numerically stable
-            return x - x * x / 2 + x * x * x / 6 - x * x * x * x / 24;
+            if (x < 1e-5)
+                // Using Taylor expansion of 1 - exp(-x) is most numerically stable
+                return x - x * x / 2 + x * x * x / 6 - x * x * x * x / 24;
+            else
+                // for larger x the exact formula is better
+                return 1-Math.Exp(-x);
         }
 
         public static void test_all()

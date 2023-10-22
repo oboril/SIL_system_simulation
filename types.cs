@@ -60,8 +60,12 @@ namespace SystemSimulation
         Probability exponential_dist(Rate r, Time t)
         {
             Probability rt = r * t;
-            // Using Taylor expansion of 1 - exp(-rt) is most numerically stable
-            return rt - rt * rt / 2 + rt * rt * rt / 6 - rt * rt * rt * rt / 24;
+            if (rt < 1e-5)
+                // Using Taylor expansion of 1 - exp(-rt) is most numerically stable
+                return rt - rt * rt / 2 + rt * rt * rt / 6 - rt * rt * rt * rt / 24;
+            else
+                // for larger rt the exact formula is better
+                return 1-Math.Exp(-rt);
         }
 
         /// <summary>
