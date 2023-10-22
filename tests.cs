@@ -465,6 +465,7 @@ namespace SystemSimulationTests
             
 
             Console.WriteLine("{0}", system.average_failure_probability(TL, 1e-10));
+            // prints 0.0002938244697815964
         }
     }
 }
