@@ -20,7 +20,7 @@ Currently the time complexity is $\mathcal{O}\left(\exp(n_c+n_i)\right)$ where $
 
 ### Usage
 
-**The code for this example is also in Program.cs**
+**The code for this example is also in example.cs**
 
 The usage will be demonstrated on the following scheme
 
